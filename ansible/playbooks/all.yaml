@@ -4,3 +4,27 @@
 
   roles:
     - pki
+
+- hosts: vmstorage
+  become: true
+
+  roles:
+    - vmstorage
+
+- hosts: vminsert
+  become: true
+
+  roles:
+    - vminsert
+
+- hosts: vmselect
+  become: true
+
+  roles:
+    - vmselect
+
+- hosts: vmagent
+  become: true
+
+  roles:
+    - vmagent

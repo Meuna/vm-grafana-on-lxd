@@ -3,3 +3,8 @@ pki_country: FR
 pki_state: Occitanie
 pki_locality: Toulouse
 domain: vmgraf.local
+vminsert_port: '8480'
+vmselect_port: '8481'
+vmstorage_port: '8482'
+vmstorage_insert_port: '8400'
+vmstorage_select_port: '8401'

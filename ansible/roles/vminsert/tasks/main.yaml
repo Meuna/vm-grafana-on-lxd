@@ -1,0 +1,20 @@
+---
+- name: install docker.io package
+  ansible.builtin.package:
+    name: docker.io
+    state: present
+
+- name: create vminsert container
+  community.docker.docker_container:
+    name: vminsert
+    image: victoriametrics/vminsert:v1.125.0-cluster
+    published_ports:
+      - '{{ vminsert_port }}:{{ vminsert_port }}'
+    restart_policy: always
+    detach: yes
+    command: >-
+      {{ groups['vmstorage']
+        | map('extract', hostvars)
+        | map(attribute='inventory_hostname')
+        | map('regex_replace', '^(.*)$', '--storageNode=\1:' + vmstorage_insert_port)
+      }}

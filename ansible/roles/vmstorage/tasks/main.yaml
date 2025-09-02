@@ -1,0 +1,23 @@
+---
+- name: install docker.io package
+  ansible.builtin.package:
+    name: docker.io
+    state: present
+
+- name: create vmstorage volume
+  community.docker.docker_volume:
+    name: vmstorage
+
+- name: create vmstorage container
+  community.docker.docker_container:
+    name: vmstorage
+    image: victoriametrics/vmstorage:v1.125.0-cluster
+    published_ports:
+      - '{{ vmstorage_insert_port }}:{{ vmstorage_insert_port }}'
+      - '{{ vmstorage_select_port }}:{{ vmstorage_select_port }}'
+      - '{{ vmstorage_port }}:{{ vmstorage_port }}'
+    volumes: vmstorage:/storage
+    restart_policy: always
+    detach: yes
+    command:
+      - '--storageDataPath=/storage'

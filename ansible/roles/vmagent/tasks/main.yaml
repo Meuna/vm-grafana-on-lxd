@@ -1,0 +1,39 @@
+---
+- name: install docker.io package
+  ansible.builtin.package:
+    name: docker.io
+    state: present
+
+- name: create /etc/prometheus folder
+  ansible.builtin.file:
+    path: /etc/prometheus
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: create prometheus.yml file
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: /etc/prometheus/prometheus.yml
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart vmagent
+
+- name: create vmagent volume
+  community.docker.docker_volume:
+    name: vmagent
+
+- name: create vmagent container
+  community.docker.docker_container:
+    name: vmagent
+    image: victoriametrics/vmagent:v1.125.0
+    volumes:
+      - vmagent:/storage
+      - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    restart_policy: always
+    detach: yes
+    command:
+      - '--promscrape.config=/etc/prometheus/prometheus.yml'
+      - '--remoteWrite.url=http://{{ groups.vminsert[0] }}:{{ vminsert_port }}/insert/0/prometheus/api/v1/write'

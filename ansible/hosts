@@ -1,16 +1,16 @@
 [pki]
 vm.vmgraf.local
 
-[vm-auth]
+[vmstorage]
 vm.vmgraf.local
 
-[vm-storage]
+[vminsert]
 vm.vmgraf.local
 
-[vm-insert]
+[vmselect]
 vm.vmgraf.local
 
-[vm-select]
+[vmagent]
 vm.vmgraf.local
 
 [grafana]

@@ -1,0 +1,5 @@
+---
+- name: restart vmagent
+  community.docker.docker_container:
+    name: vmagent
+    restart: yes
