@@ -1,0 +1,31 @@
+ARGS=" \
+    --collector.systemd \
+    --collector.systemd.unit-include=(docker|rsyslog).service \
+    --no-collector.arp \
+    --no-collector.bcache \
+    --no-collector.bonding \
+    --no-collector.btrfs \
+    --no-collector.conntrack \
+    --no-collector.dmi \
+    --no-collector.edac \
+    --no-collector.entropy \
+    --no-collector.fibrechannel \
+    --no-collector.infiniband \
+    --no-collector.ipvs \
+    --no-collector.mdadm \
+    --no-collector.netclass \
+    --no-collector.netdev \
+    --no-collector.netstat \
+    --no-collector.pressure \
+    --no-collector.rapl \
+    --no-collector.schedstat \
+    --no-collector.selinux \
+    --no-collector.sockstat \
+    --no-collector.softnet \
+    --no-collector.tapestats \
+    --no-collector.textfile \
+    --no-collector.thermal_zone \
+    --no-collector.timex \
+    --no-collector.vmstat \
+    --no-collector.xfs \
+    --no-collector.zfs"

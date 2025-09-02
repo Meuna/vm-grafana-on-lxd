@@ -15,3 +15,8 @@ vm.vmgraf.local
 
 [grafana]
 grafana.vmgraf.local
+
+[node_exporter]
+vm.vmgraf.local
+grafana.vmgraf.local
+scrapped.vmgraf.local

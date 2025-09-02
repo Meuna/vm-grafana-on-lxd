@@ -1,0 +1,14 @@
+---
+- name: install prometheus-node-exporter package
+  ansible.builtin.package:
+    name: prometheus-node-exporter
+    state: present
+
+- name: create prometheus-node-exporter defaults
+  ansible.builtin.copy:
+    src: prometheus-node-exporter
+    dest: /etc/default/prometheus-node-exporter
+    owner: root
+    group: root
+    mode: '0644'
+  notify: reload prometheus-node-exporter

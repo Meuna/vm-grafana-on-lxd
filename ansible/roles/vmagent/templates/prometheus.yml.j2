@@ -2,24 +2,31 @@ global:
   scrape_interval: 10s
 
 scrape_configs:
+- job_name: "node_exporter"
+  static_configs:
+    - targets:  {{ groups['node_exporter']
+                  | map('extract', hostvars)
+                  | map(attribute='inventory_hostname')
+                  | map('regex_replace', '^(.*)$', '\\1:' + node_exporter_port)
+                }}
 - job_name: vminsert
   static_configs:
-  - targets:  {{ groups['vminsert']
-                | map('extract', hostvars)
-                | map(attribute='inventory_hostname')
-                | map('regex_replace', '^(.*)$', '\\1:' + vminsert_port)
-              }}
+    - targets:  {{ groups['vminsert']
+                  | map('extract', hostvars)
+                  | map(attribute='inventory_hostname')
+                  | map('regex_replace', '^(.*)$', '\\1:' + vminsert_port)
+                }}
 - job_name: vmselect
   static_configs:
-  - targets:  {{ groups['vmselect']
-                | map('extract', hostvars)
-                | map(attribute='inventory_hostname')
-                | map('regex_replace', '^(.*)$', '\\1:' + vmselect_port)
-              }}
+    - targets:  {{ groups['vmselect']
+                  | map('extract', hostvars)
+                  | map(attribute='inventory_hostname')
+                  | map('regex_replace', '^(.*)$', '\\1:' + vmselect_port)
+                }}
 - job_name: vmstorage
   static_configs:
-  - targets:  {{ groups['vmstorage']
-                | map('extract', hostvars)
-                | map(attribute='inventory_hostname')
-                | map('regex_replace', '^(.*)$', '\\1:' + vmstorage_port)
-              }}
+    - targets:  {{ groups['vmstorage']
+                  | map('extract', hostvars)
+                  | map(attribute='inventory_hostname')
+                  | map('regex_replace', '^(.*)$', '\\1:' + vmstorage_port)
+                }}
