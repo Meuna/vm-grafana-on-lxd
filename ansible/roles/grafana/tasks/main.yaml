@@ -1,0 +1,14 @@
+---
+- name: install docker.io package
+  ansible.builtin.package:
+    name: docker.io
+    state: present
+
+- name: create grafana container
+  community.docker.docker_container:
+    name: grafana
+    image: grafana/grafana:12.1
+    published_ports:
+      - '{{ grafana_port }}:{{ grafana_port }}'
+    restart_policy: always
+    detach: yes

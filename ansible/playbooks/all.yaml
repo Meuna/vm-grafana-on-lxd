@@ -29,6 +29,12 @@
   roles:
     - vmagent
 
+- hosts: grafana
+  become: true
+
+  roles:
+    - grafana
+
 - hosts: node_exporter
   become: true
 
