@@ -8,5 +8,7 @@ vmselect_port: '8481'
 vmstorage_port: '8482'
 vmstorage_insert_port: '8400'
 vmstorage_select_port: '8401'
+vmauth_port: '8427'
+vmauth_token: abcd
 node_exporter_port: '9100'
 grafana_port: '3000'

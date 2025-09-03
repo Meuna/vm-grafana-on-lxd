@@ -13,6 +13,9 @@ vm.vmgraf.local
 [vmagent]
 vm.vmgraf.local
 
+[vmauth]
+vm.vmgraf.local
+
 [grafana]
 grafana.vmgraf.local
 

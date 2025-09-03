@@ -1,0 +1,18 @@
+users:
+  - bearer_token: {{ vmauth_token }}
+    url_map:
+    - src_paths:
+      - "/select/.*"
+      - "/admin/.*"
+      url_prefix: {{ groups['vmselect']
+                    | map('extract', hostvars)
+                    | map(attribute='inventory_hostname')
+                    | map('regex_replace', '^(.*)$', 'http://\\1:' + vmselect_port)
+                   }}
+    - src_paths:
+      - "/insert/.*"
+      url_prefix: {{ groups['vminsert']
+                    | map('extract', hostvars)
+                    | map(attribute='inventory_hostname')
+                    | map('regex_replace', '^(.*)$', 'http://\\1:' + vminsert_port)
+                   }}

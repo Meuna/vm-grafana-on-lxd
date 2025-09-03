@@ -1,0 +1,34 @@
+---
+- name: install docker.io package
+  ansible.builtin.package:
+    name: docker.io
+    state: present
+
+- name: create /etc/victoriametrics folder
+  ansible.builtin.file:
+    path: /etc/victoriametrics
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: create auth.yml file
+  ansible.builtin.template:
+    src: auth.yml.j2
+    dest: /etc/victoriametrics/auth.yml
+    owner: root
+    group: root
+    mode: '0600'
+  notify: restart vmauth
+
+- name: create vmauth container
+  community.docker.docker_container:
+    name: vmauth
+    image: victoriametrics/vmauth:v1.125.0
+    published_ports:
+      - '{{ vmauth_port }}:{{ vmauth_port }}'
+    volumes:
+      - /etc/victoriametrics/auth.yml:/etc/victoriametrics/auth.yml
+    restart_policy: always
+    detach: yes
+    command: --auth.config=/etc/victoriametrics/auth.yml

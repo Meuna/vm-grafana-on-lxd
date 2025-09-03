@@ -29,6 +29,12 @@
   roles:
     - vmagent
 
+- hosts: vmauth
+  become: true
+
+  roles:
+    - vmauth
+
 - hosts: grafana
   become: true
 
