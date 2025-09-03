@@ -2,6 +2,8 @@
 - name: create TLS private key
   community.crypto.openssl_privatekey:
     path: /etc/victoriametrics/vmauth.key
+    type: ECC
+    curve: secp256r1
     mode: '0600'
     owner: root
     group: root
