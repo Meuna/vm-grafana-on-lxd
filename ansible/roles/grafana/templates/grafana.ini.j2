@@ -1,0 +1,9 @@
+[server]
+http_addr =
+http_port = 3000
+domain = {{ domain }}
+root_url = https://{{ inventory_hostname }}:{{ grafana_port }}
+cert_key = /etc/grafana/grafana.key
+cert_file = /etc/grafana/grafana.crt
+enforce_domain = False
+protocol = https

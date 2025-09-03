@@ -1,4 +1,5 @@
 ARGS=" \
+    --web.config.file=/etc/prometheus/web-config.yml \
     --collector.systemd \
     --collector.systemd.unit-include=(docker|rsyslog).service \
     --no-collector.arp \

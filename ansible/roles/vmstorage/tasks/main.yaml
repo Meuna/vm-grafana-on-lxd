@@ -4,6 +4,16 @@
     name: docker.io
     state: present
 
+- name: create /etc/victoriametrics folder
+  ansible.builtin.file:
+    path: /etc/victoriametrics
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- ansible.builtin.import_tasks: tls.yaml
+
 - name: create vmstorage volume
   community.docker.docker_volume:
     name: vmstorage
@@ -16,8 +26,14 @@
       - '{{ vmstorage_insert_port }}:{{ vmstorage_insert_port }}'
       - '{{ vmstorage_select_port }}:{{ vmstorage_select_port }}'
       - '{{ vmstorage_port }}:{{ vmstorage_port }}'
-    volumes: vmstorage:/storage
+    volumes:
+      - vmstorage:/storage
+      - /etc/victoriametrics/vmstorage.crt:/etc/victoriametrics/vmstorage.crt:ro
+      - /etc/victoriametrics/vmstorage.key:/etc/victoriametrics/vmstorage.key:ro
     restart_policy: always
     detach: yes
     command:
-      - '--storageDataPath=/storage'
+      - '-tls'
+      - '-tlsCertFile=/etc/victoriametrics/vmstorage.crt'
+      - '-tlsKeyFile=/etc/victoriametrics/vmstorage.key'
+      - '-storageDataPath=/storage'

@@ -7,12 +7,12 @@ users:
       url_prefix: {{ groups['vmselect']
                     | map('extract', hostvars)
                     | map(attribute='inventory_hostname')
-                    | map('regex_replace', '^(.*)$', 'http://\\1:' + vmselect_port)
+                    | map('regex_replace', '^(.*)$', 'https://\\1:' + vmselect_port)
                    }}
     - src_paths:
       - "/insert/.*"
       url_prefix: {{ groups['vminsert']
                     | map('extract', hostvars)
                     | map(attribute='inventory_hostname')
-                    | map('regex_replace', '^(.*)$', 'http://\\1:' + vminsert_port)
+                    | map('regex_replace', '^(.*)$', 'https://\\1:' + vminsert_port)
                    }}

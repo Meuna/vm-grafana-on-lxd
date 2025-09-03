@@ -4,11 +4,47 @@
     name: docker.io
     state: present
 
+- name: create /etc/grafana folder
+  ansible.builtin.file:
+    path: /etc/grafana
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- ansible.builtin.import_tasks: tls.yaml
+
+- name: create grafana.ini file
+  ansible.builtin.template:
+    src: grafana.ini.j2
+    dest: /etc/grafana/grafana.ini
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart grafana
+
+- name: change grafana.key ownership to grafana
+  community.docker.docker_container:
+    name: grafana-chwown-key
+    auto_remove: yes
+    user: root
+    image: grafana/grafana:12.1
+    volumes:
+      - /etc/grafana/grafana.key:/etc/grafana/grafana.key
+    entrypoint:
+      - chown
+      - grafana:root
+      - /etc/grafana/grafana.key
+
 - name: create grafana container
   community.docker.docker_container:
     name: grafana
     image: grafana/grafana:12.1
     published_ports:
       - '{{ grafana_port }}:{{ grafana_port }}'
+    volumes:
+      - /etc/grafana/grafana.ini:/etc/grafana/grafana.ini
+      - /etc/grafana/grafana.crt:/etc/grafana/grafana.crt:ro
+      - /etc/grafana/grafana.key:/etc/grafana/grafana.key:ro
     restart_policy: always
     detach: yes

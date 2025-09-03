@@ -1,5 +1,3 @@
 ---
 - name: restart vmauth
-  community.docker.docker_container:
-    name: vmauth
-    restart: yes
+  community.docker.docker_container: name=vmauth restart=yes

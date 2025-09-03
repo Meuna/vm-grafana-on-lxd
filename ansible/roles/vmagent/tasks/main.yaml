@@ -4,18 +4,20 @@
     name: docker.io
     state: present
 
-- name: create /etc/prometheus folder
+- name: create /etc/victoriametrics folder
   ansible.builtin.file:
-    path: /etc/prometheus
+    path: /etc/victoriametrics
     state: directory
     owner: root
     group: root
     mode: '0755'
 
+- ansible.builtin.import_tasks: tls.yaml
+
 - name: create prometheus.yml file
   ansible.builtin.template:
     src: prometheus.yml.j2
-    dest: /etc/prometheus/prometheus.yml
+    dest: /etc/victoriametrics/prometheus.yml
     owner: root
     group: root
     mode: '0644'
@@ -29,11 +31,20 @@
   community.docker.docker_container:
     name: vmagent
     image: victoriametrics/vmagent:v1.125.0
+    published_ports:
+      - '{{ vmagent_port }}:{{ vmagent_port }}'
     volumes:
       - vmagent:/storage
-      - /etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - /etc/victoriametrics/prometheus.yml:/etc/victoriametrics/prometheus.yml
+      - /etc/victoriametrics/vmagent.crt:/etc/victoriametrics/vmagent.crt:ro
+      - /etc/victoriametrics/vmagent.key:/etc/victoriametrics/vmagent.key:ro
+      - /etc/ssl/certs/vmgraf-ca.pem:/etc/ssl/certs/vmgraf-ca.pem:ro
     restart_policy: always
     detach: yes
     command:
-      - '--promscrape.config=/etc/prometheus/prometheus.yml'
-      - '--remoteWrite.url=http://{{ groups.vminsert[0] }}:{{ vminsert_port }}/insert/0/prometheus/api/v1/write'
+      - '-tls'
+      - '-tlsCertFile=/etc/victoriametrics/vmagent.crt'
+      - '-tlsKeyFile=/etc/victoriametrics/vmagent.key'
+      - '-promscrape.config=/etc/victoriametrics/prometheus.yml'
+      - '-remoteWrite.url=https://{{ groups.vminsert[0] }}:{{ vminsert_port }}/insert/0/prometheus/api/v1/write'
+      - '-remoteWrite.tlsCAFile=/etc/ssl/certs/vmgraf-ca.pem'

@@ -4,6 +4,25 @@
     name: prometheus-node-exporter
     state: present
 
+- name: create /etc/prometheus folder
+  ansible.builtin.file:
+    path: /etc/prometheus
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- ansible.builtin.import_tasks: tls.yaml
+
+- name: create prometheus.yml file
+  ansible.builtin.template:
+    src: web-config.yml.j2
+    dest: /etc/prometheus/web-config.yml
+    owner: prometheus
+    group: prometheus
+    mode: '0644'
+  notify: restart prometheus-node-exporter
+
 - name: create prometheus-node-exporter defaults
   ansible.builtin.copy:
     src: prometheus-node-exporter
@@ -11,4 +30,10 @@
     owner: root
     group: root
     mode: '0644'
-  notify: reload prometheus-node-exporter
+  notify: restart prometheus-node-exporter
+
+- name: enable  prometheus-node-exporter
+  ansible.builtin.service:
+    name: prometheus-node-exporter
+    state: started
+    enabled: yes

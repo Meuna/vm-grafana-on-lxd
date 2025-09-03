@@ -12,6 +12,8 @@
     group: root
     mode: '0755'
 
+- ansible.builtin.import_tasks: tls.yaml
+
 - name: create auth.yml file
   ansible.builtin.template:
     src: auth.yml.j2
@@ -29,6 +31,14 @@
       - '{{ vmauth_port }}:{{ vmauth_port }}'
     volumes:
       - /etc/victoriametrics/auth.yml:/etc/victoriametrics/auth.yml
+      - /etc/victoriametrics/vmauth.crt:/etc/victoriametrics/vmauth.crt:ro
+      - /etc/victoriametrics/vmauth.key:/etc/victoriametrics/vmauth.key:ro
+      - /etc/ssl/certs/vmgraf-ca.pem:/etc/ssl/certs/vmgraf-ca.pem:ro
     restart_policy: always
     detach: yes
-    command: --auth.config=/etc/victoriametrics/auth.yml
+    command:
+      - '-tls'
+      - '-tlsCertFile=/etc/victoriametrics/vmauth.crt'
+      - '-tlsKeyFile=/etc/victoriametrics/vmauth.key'
+      - '-auth.config=/etc/victoriametrics/auth.yml'
+      - '-backend.TLSCAFile=/etc/ssl/certs/vmgraf-ca.pem'

@@ -4,17 +4,35 @@
     name: docker.io
     state: present
 
+- name: create /etc/victoriametrics folder
+  ansible.builtin.file:
+    path: /etc/victoriametrics
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- ansible.builtin.import_tasks: tls.yaml
+
 - name: create vminsert container
   community.docker.docker_container:
     name: vminsert
     image: victoriametrics/vminsert:v1.125.0-cluster
     published_ports:
       - '{{ vminsert_port }}:{{ vminsert_port }}'
+    volumes:
+      - /etc/victoriametrics/vminsert.crt:/etc/victoriametrics/vminsert.crt:ro
+      - /etc/victoriametrics/vminsert.key:/etc/victoriametrics/vminsert.key:ro
     restart_policy: always
     detach: yes
-    command: >-
-      {{ groups['vmstorage']
-        | map('extract', hostvars)
-        | map(attribute='inventory_hostname')
-        | map('regex_replace', '^(.*)$', '--storageNode=\1:' + vmstorage_insert_port)
-      }}
+    command:
+      - '-tls'
+      - '-tlsCertFile=/etc/victoriametrics/vminsert.crt'
+      - '-tlsKeyFile=/etc/victoriametrics/vminsert.key'
+      - >-
+        -storageNode={{ groups['vmstorage']
+          | map('extract', hostvars)
+          | map(attribute='inventory_hostname')
+          | map('regex_replace', '$', ':' + vmstorage_insert_port)
+          | join(',')
+        }}

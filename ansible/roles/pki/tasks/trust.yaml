@@ -11,7 +11,7 @@
 - name: copy CA to /usr/local/share/ca-certificates
   ansible.builtin.import_tasks: get_ca.yaml
   vars:
-    crt_path: /usr/local/share/ca-certificates/kthw-ca.crt
+    crt_path: /usr/local/share/ca-certificates/vmgraf-ca.crt
 
 - name: update trust store
   ansible.builtin.command: update-ca-certificates

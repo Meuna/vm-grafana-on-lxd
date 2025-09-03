@@ -4,17 +4,35 @@
     name: docker.io
     state: present
 
+- name: create /etc/victoriametrics folder
+  ansible.builtin.file:
+    path: /etc/victoriametrics
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- ansible.builtin.import_tasks: tls.yaml
+
 - name: create vmselect container
   community.docker.docker_container:
     name: vmselect
     image: victoriametrics/vmselect:v1.125.0-cluster
     published_ports:
       - '{{ vmselect_port }}:{{ vmselect_port }}'
+    volumes:
+      - /etc/victoriametrics/vmselect.crt:/etc/victoriametrics/vmselect.crt:ro
+      - /etc/victoriametrics/vmselect.key:/etc/victoriametrics/vmselect.key:ro
     restart_policy: always
     detach: yes
-    command: >-
-      {{ groups['vmstorage']
-        | map('extract', hostvars)
-        | map(attribute='inventory_hostname')
-        | map('regex_replace', '^(.*)$', '--storageNode=\1:' + vmstorage_select_port)
-      }}
+    command:
+      - '-tls'
+      - '-tlsCertFile=/etc/victoriametrics/vmselect.crt'
+      - '-tlsKeyFile=/etc/victoriametrics/vmselect.key'
+      - >-
+        -storageNode={{ groups['vmstorage']
+          | map('extract', hostvars)
+          | map(attribute='inventory_hostname')
+          | map('regex_replace', '$', ':' + vmstorage_insert_port)
+          | join(',')
+        }}
