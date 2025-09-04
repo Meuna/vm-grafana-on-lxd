@@ -72,7 +72,7 @@ resource "lxd_profile" "vmgraf" {
   }
 }
 
-resource "lxd_instance" "krb5" {
+resource "lxd_instance" "vm" {
   project  = lxd_project.vmgraf.name
   name     = "vm"
   image    = "ubuntu:24.04"
@@ -80,7 +80,7 @@ resource "lxd_instance" "krb5" {
   profiles = [lxd_profile.vmgraf.name]
 }
 
-resource "lxd_instance" "nfs" {
+resource "lxd_instance" "grafana" {
   project  = lxd_project.vmgraf.name
   name     = "grafana"
   image    = "ubuntu:24.04"
@@ -88,7 +88,7 @@ resource "lxd_instance" "nfs" {
   profiles = [lxd_profile.vmgraf.name]
 }
 
-resource "lxd_instance" "client" {
+resource "lxd_instance" "scrapped" {
   project  = lxd_project.vmgraf.name
   name     = "scrapped"
   image    = "ubuntu:24.04"
