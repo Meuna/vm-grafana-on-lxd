@@ -12,4 +12,8 @@ vmauth_port: '8427'
 vmagent_port: '8429'
 vmauth_token: abcd
 node_exporter_port: '9100'
+snmp_exporter_port: '9116'
 grafana_port: '3000'
+snmp_user: rosnmp
+snmp_pw: easypass
+snmp_auth_name: authpriv_v3

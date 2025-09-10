@@ -2,43 +2,80 @@ global:
   scrape_interval: 10s
 
 scrape_configs:
-- job_name: "node_exporter"
-  scheme: https
-  tls_config:
-    ca_file: /etc/ssl/certs/vmgraf-ca.pem
-  static_configs:
-    - targets:  {{ groups['node_exporter']
-                  | map('extract', hostvars)
-                  | map(attribute='inventory_hostname')
-                  | map('regex_replace', '^(.*)$', '\\1:' + node_exporter_port)
-                }}
-- job_name: vminsert
-  scheme: https
-  tls_config:
-    ca_file: /etc/ssl/certs/vmgraf-ca.pem
-  static_configs:
-    - targets:  {{ groups['vminsert']
-                  | map('extract', hostvars)
-                  | map(attribute='inventory_hostname')
-                  | map('regex_replace', '$', ':' + vminsert_port)
-                }}
-- job_name: vmselect
-  scheme: https
-  tls_config:
-    ca_file: /etc/ssl/certs/vmgraf-ca.pem
-  static_configs:
-    - targets:  {{ groups['vmselect']
-                  | map('extract', hostvars)
-                  | map(attribute='inventory_hostname')
-                  | map('regex_replace', '$', ':' + vmselect_port)
-                }}
-- job_name: vmstorage
-  scheme: https
-  tls_config:
-    ca_file: /etc/ssl/certs/vmgraf-ca.pem
-  static_configs:
-    - targets:  {{ groups['vmstorage']
-                  | map('extract', hostvars)
-                  | map(attribute='inventory_hostname')
-                  | map('regex_replace', '$', ':' + vmstorage_port)
-                }}
+  - job_name: 'snmp'
+    scheme: https
+    tls_config:
+      ca_file: /etc/ssl/certs/vmgraf-ca.pem
+    static_configs:
+      - targets:  {{ groups['snmp_agent']
+                    | map('extract', hostvars)
+                    | map(attribute='inventory_hostname')
+                  }}
+    metrics_path: /snmp
+    params:
+      auth: [{{ snmp_auth_name }}]
+      module:
+        - if_mib
+        - hrDevice
+        - hrSWInstalled
+        - hrSWRun
+        - hrSWRunPerf
+        - hrStorage
+        - hrSystem
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: {{ groups['snmp_exporter'][0] + ':' + snmp_exporter_port }}
+  - job_name: 'snmp_exporter'
+    scheme: https
+    tls_config:
+      ca_file: /etc/ssl/certs/vmgraf-ca.pem
+    static_configs:
+      - targets:  {{ groups['snmp_exporter']
+                    | map('extract', hostvars)
+                    | map(attribute='inventory_hostname')
+                    | map('regex_replace', '^(.*)$', '\\1:' + snmp_exporter_port)
+                  }}
+  - job_name: "node_exporter"
+    scheme: https
+    tls_config:
+      ca_file: /etc/ssl/certs/vmgraf-ca.pem
+    static_configs:
+      - targets:  {{ groups['node_exporter']
+                    | map('extract', hostvars)
+                    | map(attribute='inventory_hostname')
+                    | map('regex_replace', '^(.*)$', '\\1:' + node_exporter_port)
+                  }}
+  - job_name: vminsert
+    scheme: https
+    tls_config:
+      ca_file: /etc/ssl/certs/vmgraf-ca.pem
+    static_configs:
+      - targets:  {{ groups['vminsert']
+                    | map('extract', hostvars)
+                    | map(attribute='inventory_hostname')
+                    | map('regex_replace', '$', ':' + vminsert_port)
+                  }}
+  - job_name: vmselect
+    scheme: https
+    tls_config:
+      ca_file: /etc/ssl/certs/vmgraf-ca.pem
+    static_configs:
+      - targets:  {{ groups['vmselect']
+                    | map('extract', hostvars)
+                    | map(attribute='inventory_hostname')
+                    | map('regex_replace', '$', ':' + vmselect_port)
+                  }}
+  - job_name: vmstorage
+    scheme: https
+    tls_config:
+      ca_file: /etc/ssl/certs/vmgraf-ca.pem
+    static_configs:
+      - targets:  {{ groups['vmstorage']
+                    | map('extract', hostvars)
+                    | map(attribute='inventory_hostname')
+                    | map('regex_replace', '$', ':' + vmstorage_port)
+                  }}

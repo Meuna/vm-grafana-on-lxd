@@ -88,9 +88,9 @@ resource "lxd_instance" "grafana" {
   profiles = [lxd_profile.vmgraf.name]
 }
 
-resource "lxd_instance" "scrapped" {
+resource "lxd_instance" "snmp-agent" {
   project  = lxd_project.vmgraf.name
-  name     = "scrapped"
+  name     = "snmp-agent"
   image    = "ubuntu:24.04"
   type     = "virtual-machine"
   profiles = [lxd_profile.vmgraf.name]

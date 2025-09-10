@@ -1,0 +1,48 @@
+---
+- name: install prometheus-snmp-exporter package
+  ansible.builtin.package:
+    name: prometheus-snmp-exporter
+    state: present
+
+- name: create /etc/prometheus folder
+  ansible.builtin.file:
+    path: /etc/prometheus
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- ansible.builtin.import_tasks: tls.yaml
+
+- name: create snmp-web-config.yml file
+  ansible.builtin.template:
+    src: web-config.yml.j2
+    dest: /etc/prometheus/snmp-web-config.yml
+    owner: prometheus
+    group: prometheus
+    mode: '0644'
+  notify: restart prometheus-snmp-exporter
+
+- name: create snmp.yml file
+  ansible.builtin.template:
+    src: snmp.yml.j2
+    dest: /etc/prometheus/snmp.yml
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart prometheus-snmp-exporter
+
+- name: create prometheus-snmp-exporter defaults
+  ansible.builtin.copy:
+    src: prometheus-snmp-exporter
+    dest: /etc/default/prometheus-snmp-exporter
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart prometheus-snmp-exporter
+
+- name: enable prometheus-snmp-exporter
+  ansible.builtin.service:
+    name: prometheus-snmp-exporter
+    state: started
+    enabled: yes

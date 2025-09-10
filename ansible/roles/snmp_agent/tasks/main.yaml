@@ -1,0 +1,26 @@
+---
+- name: install prometheus-snmp-exporter package
+  ansible.builtin.package:
+    name:
+      - snmpd
+      - snmp
+    state: present
+
+- name: create ext-v3-ro.conf file
+  ansible.builtin.template:
+    src: snmpd.conf.j2
+    dest: /etc/snmp/snmpd.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: add the createuser line in 
+  ansible.builtin.lineinfile:
+    line: createuser {{ snmp_user }} SHA {{ snmp_pw }} AES {{ snmp_pw }}
+    path: /var/lib/snmp/snmpd.conf
+
+- name: enable snmpd
+  ansible.builtin.service:
+    name: snmpd
+    state: restarted
+    enabled: yes

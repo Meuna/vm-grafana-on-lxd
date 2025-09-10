@@ -14,10 +14,10 @@
 
 - ansible.builtin.import_tasks: tls.yaml
 
-- name: create prometheus.yml file
+- name: create node-web-config.yml file
   ansible.builtin.template:
     src: web-config.yml.j2
-    dest: /etc/prometheus/web-config.yml
+    dest: /etc/prometheus/node-web-config.yml
     owner: prometheus
     group: prometheus
     mode: '0644'

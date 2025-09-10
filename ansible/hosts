@@ -19,7 +19,12 @@ vm.vmgraf.local
 [grafana]
 grafana.vmgraf.local
 
+[snmp_exporter]
+vm.vmgraf.local
+
 [node_exporter]
 vm.vmgraf.local
 grafana.vmgraf.local
-scrapped.vmgraf.local
+
+[snmp_agent]
+snmp-agent.vmgraf.local
